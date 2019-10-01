@@ -1,4 +1,4 @@
-(in-package #:incandescent)
+(in-package #:nepal)
 
 (defclass event (audio)
   ((odds    :initarg :odds    :accessor event-odds)

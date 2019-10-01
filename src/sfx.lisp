@@ -1,4 +1,4 @@
-(in-package #:incandescent)
+(in-package #:nepal)
 
 (defclass sfx (event)
   ((pos-offset    :initarg :pos-offset    :accessor sfx-pos-offset)

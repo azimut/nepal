@@ -1,4 +1,4 @@
-(in-package #:incandescent)
+(in-package #:nepal)
 
 ;; Container of events. Plays the events it holds providing positional data.
 ;; Inherit from this class to for your object to have sound.

@@ -1,6 +1,6 @@
 ;;;; package.lisp
 
 (uiop:define-package #:nepal
-  (:use #:cl #:rtg-math #:alexandria)
+  (:use #:cl #:rtg-math)
   (:import-from #:serapeum
                 #:op))

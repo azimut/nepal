@@ -1,4 +1,4 @@
-(in-package #:incandescent)
+(in-package #:nepal)
 
 ;; Base class
 

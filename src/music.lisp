@@ -1,4 +1,4 @@
-(in-package #:incandescent)
+(in-package #:nepal)
 
 ;; TODO: fade-time, that is give a time in seconds to fade.
 ;; with current code, you need to try to ensure a fixed fps
