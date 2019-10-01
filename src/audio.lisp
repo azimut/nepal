@@ -43,26 +43,3 @@
 (defmethod stop-audio ((obj audio))
   (with-slots (source) obj
     (al:source-stop source)))
-
-#+nil
-(progn (defclass foo ()
-         ((field1 :initarg :field1))
-         (:default-initargs
-          :field1 1))
-       (defclass bar (foo)
-         ()
-         (:default-initargs
-          :field1 2))
-       (defmethod ho ((obj foo))
-         (print "foo"))
-       (defmethod ho :around ((obj foo))
-         (print "aroundfoo")
-         (call-next-method))
-       (defmethod ho :around ((obj bar))
-         (print "aroundbar")
-         (call-next-method))
-       (defmethod ho ((obj bar))
-         (print "bar"))
-       (defmethod initialize-instance :after ((obj foo) &key)
-         (with-slots (field1) obj
-           (print field1))))
