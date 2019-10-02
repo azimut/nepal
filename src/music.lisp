@@ -28,7 +28,7 @@
   (al:source source :source-relative t)
   (al:source source :position (v! 0 0 0)))
 
-(defmethod play-audio ((obj music))
+(defmethod play ((obj music))
   "plays cm:next buffer element in pattern"
   (with-accessors ((pattern event-pattern)
                    (source  audio-source))

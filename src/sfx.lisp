@@ -39,7 +39,7 @@
       value
       (+ value (- (random offset) (/ offset 2f0)))))
 
-(defmethod play-audio ((obj sfx))
+(defmethod play ((obj sfx))
   "plays cm:next buffer element in pattern"
   (with-accessors ((volume-offset sfx-volume-offset)
                    (rate-offset   sfx-rate-offset)

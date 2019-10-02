@@ -23,16 +23,16 @@
 (defun make-audio (name paths)
   (make-instance 'audio :name name :paths paths))
 
-(defgeneric play-audio (obj))
+(defgeneric play (obj))
 
-(defmethod play-audio :around ((obj audio))
+(defmethod play :around ((obj audio))
   "ignore order to play if source is busy"
   (let ((state (al:get-source (audio-source obj) :source-state)))
     (when (or (eq :STOPPED state)
               (eq :INITIAL state))
       (call-next-method))))
 
-(defmethod play-audio ((obj audio))
+(defmethod play ((obj audio))
   "Simplest play, plays the first buffer in buffers"
   (with-accessors ((buffers audio-buffers)
                    (source  audio-source))

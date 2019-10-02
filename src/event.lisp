@@ -26,7 +26,7 @@
                                    (odds   1f0))
   (make-instance 'event :name name :paths paths :volume volume :odds odds))
 
-(defmethod play-audio ((obj event))
+(defmethod play ((obj event))
   "plays cm:next buffer element in pattern"
   (with-accessors ((pattern event-pattern)
                    (odds    event-odds)

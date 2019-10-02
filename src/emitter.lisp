@@ -24,7 +24,7 @@
                    (events   emitter-events)
                    (position pos))
       emitter
-    (map nil (op (play-audio _ position velocity)) events)))
+    (map nil (op (play _ position velocity)) events)))
 
 (defmethod update :before ((obj emitter) dt)
   "set velocity"
