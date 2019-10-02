@@ -20,4 +20,4 @@
                (:file "event")
                (:file "music")
                (:file "sfx")
-               (:file "emmiter")))
+               (:file "emitter")))
