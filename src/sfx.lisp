@@ -10,6 +10,7 @@
    :pos-offset (v! 0 0 0)
    :volume-offset 0f0
    :rate-offset 0f0
+   :relative nil
    :stepper nil
    :step-size 0f0)
   (:documentation "special type of event for sfx needs"))
@@ -18,16 +19,10 @@
   (when (not (zerop step-size))
     (setf stepper (make-stepper (seconds step-size) (seconds step-size)))))
 
-(defun make-sfx (name &rest paths
-                      &key (volume 0.1)
-                           (volume-offset 0f0)
-                           (rate-offset 0f0)
-                           (pos-offset (v! 0 0 0))
-                      &allow-other-keys)
-  (remf paths :volume)
-  (remf paths :volume-offset)
-  (remf paths :rate-offset)
-  (remf paths :pos-offset)
+(defun make-sfx (name paths &key (volume 0.1)
+                                 (volume-offset 0f0)
+                                 (rate-offset 0f0)
+                                 (pos-offset (v! 0 0 0)))
   (make-instance 'sfx :name name :paths paths :volume volume
                       :volume-offset volume-offset
                       :rate-offset rate-offset

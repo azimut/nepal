@@ -2,11 +2,13 @@
 
 ;; Base class
 (defclass audio ()
-  ((buffers :initarg :buffers :reader audio-buffers)
-   (paths   :initarg :paths   :reader audio-paths)
-   (source  :initarg :source  :reader audio-source)
-   (name    :initarg :name    :reader audio-name))
+  ((buffers  :initarg :buffers  :reader audio-buffers)
+   (paths    :initarg :paths    :reader audio-paths)
+   (source   :initarg :source   :reader audio-source)
+   (relative :initarg :relative :reader audio-relative)
+   (name     :initarg :name     :reader audio-name))
   (:default-initargs
+   :relative t
    :paths (list)
    :buffers (list)
    :source nil
@@ -17,11 +19,14 @@
 (defgeneric stop (obj))
 
 ;; TODO: support pattern?
-(defmethod initialize-instance :after ((obj audio) &key name paths)
+(defmethod initialize-instance :after ((obj audio) &key name paths relative)
   (with-slots (buffers source) obj
     (let ((resolved (mapcar (op (load-abuffer (truename _))) paths)))
       (setf buffers resolved)
-      (setf source  (init-source name)))))
+      (setf source  (init-source name))
+      ;; https://www.gamedev.net/forums/topic/338053-openal-ambient-music---what-position/
+      ;; make basic audio non-positional
+      (al:source source :source-relative relative))))
 
 (defun make-audio (name paths)
   (make-instance 'audio :name name :paths paths))

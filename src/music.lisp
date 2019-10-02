@@ -14,19 +14,10 @@
    :loop-p t)
   (:documentation "special type of event for music"))
 
-(defun make-music (name &rest paths
-                        &key (fade-by 0.01)
-                             (volume  0.5)
-                        &allow-other-keys)
+(defun make-music (name paths &key (fade-by 0.01)
+                                   (volume  0.5))
   "music layer, can have variations in different files..."
-  (remf paths :fade-by)
-  (remf paths :volume)
   (make-instance 'music :name name :paths paths :volume volume :fade-by fade-by))
-
-;; https://www.gamedev.net/forums/topic/338053-openal-ambient-music---what-position/
-(defmethod initialize-instance :after ((obj music) &key source)
-  (al:source source :source-relative t)
-  (al:source source :position (v! 0 0 0)))
 
 (defmethod play ((obj music))
   "plays cm:next buffer element in pattern"
