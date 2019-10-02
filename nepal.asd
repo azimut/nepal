@@ -12,7 +12,8 @@
                #:cl-alut
                #:cm
                #:rtg-math
-               #:serapeum)
+               #:serapeum
+               #:temporal-functions)
   :components ((:file "package")
                (:file "nepal")
                (:file "audio")

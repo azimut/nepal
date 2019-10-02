@@ -15,10 +15,9 @@
   (:documentation "bare minimun data to play a file with OpenAL"))
 
 ;; TODO: support pattern?
-(defmethod initialize-instance :after ((obj audio) &key)
-  (with-slots (buffers paths) obj
-    (let ((resolved (mapcar (op (load-abuffer (truename _))) paths)))
-      (setf buffers resolved))))
+(defmethod initialize-instance :after ((obj audio) &key buffers paths)
+  (let ((resolved (mapcar (op (load-abuffer (truename _))) paths)))
+    (setf buffers resolved)))
 
 (defun make-audio (name &rest paths)
   (check-type name keyword)

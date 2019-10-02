@@ -15,13 +15,12 @@
   (:documentation "layer of metadata to control when and how play an audio"))
 
 ;; TODO: either pattern or buffer set, ENSURE
-(defmethod initialize-instance :after ((obj event) &key)
+(defmethod initialize-instance :after ((obj event) &key buffers pattern source loop-p)
   "initialize pattern if not provided, and loop status"
-  (with-slots (buffers fpattern pattern source loop-p) obj
-    (check-type loop-p boolean)
-    (al:source source :looping loop-p)
-    (unless pattern
-      (setf pattern (cm:new cm:heap :of buffers)))))
+  (check-type loop-p boolean)
+  (al:source source :looping loop-p)
+  (unless pattern
+    (setf pattern (cm:new cm:heap :of buffers))))
 
 (defun make-event (name &rest paths &key (volume .1) &allow-other-keys)
   (remf paths :volume)

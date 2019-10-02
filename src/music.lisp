@@ -9,15 +9,15 @@
    (fading-in-p  :initarg :fading-in-p  :accessor music-fading-in-p)
    (fade-by      :initarg :fade-by      :accessor music-fade-by))
   (:default-initargs
-   :loop-p t
    :fading-out-p nil
    :fading-in-p t
-   :fade-by .01)
+   :fade-by .01
+   :loop-p t)
   (:documentation "special type of event for music"))
 
 (defun make-music (name &rest paths
-                        &key (volume .1)
-                             (fade-by .01f0)
+                        &key (fade-by 0.01)
+                             (volume  0.1)
                         &allow-other-keys)
   "music layer, can have variations in different files..."
   (remf paths :fade-by)
@@ -30,15 +30,13 @@
 ;; https://www.gamedev.net/forums/topic/338053-openal-ambient-music---what-position/
 ;; alSourcei(alSourceID, AL_SOURCE_RELATIVE, AL_TRUE);
 ;; alSource3f(alSourceID, AL_POSITION, 0.0f, 0.0f, 0.0f);
-(defmethod initialize-instance :after ((obj music) &key)
-  (with-slots (source) obj
-    (al:source source :source-relative t)
-    (al:source source :position (v! 0 0 0))))
+(defmethod initialize-instance :after ((obj music) &key source)
+  (al:source source :source-relative t)
+  (al:source source :position (v! 0 0 0)))
 
 (defmethod play-audio ((obj music))
   "plays cm:next buffer element in pattern"
   (with-accessors ((pattern event-pattern)
-                   (volume  event-volume)
                    (source  audio-source))
       obj
     (let ((buffer (cm:next pattern)))
@@ -54,7 +52,7 @@
 
 ;; TODO: move if outside...
 (defmethod update ((obj music) dt)
-  "called by emmiter, fade out/in when needed"
+  "called by emitter, fade out/in when needed"
   (with-slots (fading-out-p fading-in-p fade-by source volume) obj
     (let ((current-gain (al:get-source source :gain)))
       (when fading-out-p
