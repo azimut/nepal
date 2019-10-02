@@ -3,15 +3,15 @@
 ;; Container of events. Plays the events it holds providing positional data.
 ;; Inherit from this class to for your object to have sound.
 
-(defclass actor ()
-  ((pos :initform (v! 0 0 0) :initarg :pos :accessor pos)))
+(defclass dummy-actor ()
+  ((pos :initform (v! 0 0 0) :initarg :pos :accessor pos)
+   (rot :initform (q:identity) :initarg :rot :accessor rot)))
 
-(defclass emitter (actor)
+(defclass emitter (dummy-actor)
   ((prev-pos :initarg :prev-pos :accessor emitter-prev-pos)
    (velocity :initarg :velocity :accessor emitter-velocity)
    (events   :initarg :emitter  :accessor emitter-events))
   (:default-initargs
-   :pos      (v! 0 0 0)
    :prev-pos (v! 0 0 0)
    :velocity (v! 0 0 0)
    :events   (list)))

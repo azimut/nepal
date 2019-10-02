@@ -2,7 +2,6 @@
 
 ;; TODO: fade-time, that is give a time in seconds to fade.
 ;; with current code, you need to try to ensure a fixed fps
-;; TODO: fade-in
 
 (defclass music (event)
   ((fading-out-p :initarg :fading-out-p :accessor music-fading-out-p)
@@ -17,19 +16,14 @@
 
 (defun make-music (name &rest paths
                         &key (fade-by 0.01)
-                             (volume  0.1)
+                             (volume  0.5)
                         &allow-other-keys)
   "music layer, can have variations in different files..."
   (remf paths :fade-by)
   (remf paths :volume)
-  (make-instance 'music :name name
-                        :paths paths
-                        :volume volume
-                        :fade-by fade-by))
+  (make-instance 'music :name name :paths paths :volume volume :fade-by fade-by))
 
 ;; https://www.gamedev.net/forums/topic/338053-openal-ambient-music---what-position/
-;; alSourcei(alSourceID, AL_SOURCE_RELATIVE, AL_TRUE);
-;; alSource3f(alSourceID, AL_POSITION, 0.0f, 0.0f, 0.0f);
 (defmethod initialize-instance :after ((obj music) &key source)
   (al:source source :source-relative t)
   (al:source source :position (v! 0 0 0)))
