@@ -38,7 +38,7 @@
       (al:source source :gain 0f0); let fade-in kick in on (update)
       (al:source-play source))))
 
-(defmethod stop-audio ((obj music))
+(defmethod stop ((obj music))
   "do not stop the audio directly, delegate fade out to (update)"
   (with-slots (fading-out-p) obj
     (unless fading-out-p

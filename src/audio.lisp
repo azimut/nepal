@@ -13,6 +13,9 @@
    :name (gensym))
   (:documentation "bare minimun data to play a file with OpenAL"))
 
+(defgeneric play (obj))
+(defgeneric stop (obj))
+
 ;; TODO: support pattern?
 (defmethod initialize-instance :after ((obj audio) &key name paths)
   (with-slots (buffers source) obj
@@ -22,8 +25,6 @@
 
 (defun make-audio (name paths)
   (make-instance 'audio :name name :paths paths))
-
-(defgeneric play (obj))
 
 (defmethod play :around ((obj audio))
   "ignore order to play if source is busy"
@@ -41,5 +42,5 @@
       (al:source source :buffer buffer)
       (al:source-play source))))
 
-(defmethod stop-audio ((obj audio))
+(defmethod stop ((obj audio))
   (al:source-stop (audio-source obj)))
