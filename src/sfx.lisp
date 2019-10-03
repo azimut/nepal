@@ -10,7 +10,7 @@
    :pos-offset (v! 0 0 0)
    :volume-offset 0f0
    :rate-offset 0f0
-   :relative nil
+   :relative nil ; make sound positional
    :stepper nil
    :step-size 0f0)
   (:documentation "special type of event for sfx needs"))

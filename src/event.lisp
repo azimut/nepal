@@ -1,18 +1,29 @@
 (in-package #:nepal)
 
 (defclass event (audio)
-  ((odds    :initarg :odds    :accessor event-odds)
-   (pattern :initarg :pattern :accessor event-pattern)
-   (volume  :initarg :volume  :accessor event-volume)
-   (rate    :initarg :rate    :accessor event-rate)
-   (loop-p  :initarg :loop-p  :accessor event-loop-p))
+  ((odds    :accessor event-odds    :initarg :odds)
+   (pattern :accessor event-pattern :initarg :pattern)
+   (volume  :accessor event-volume  :initarg :volume)
+   (rate    :accessor event-rate    :initarg :rate)
+   (loop-p  :accessor event-loop-p  :initarg :loop-p)
+   (gain    :accessor state-gain))
   (:default-initargs
    :odds 1f0
    :pattern nil
    :volume .5
    :rate 1f0
    :loop-p nil)
-  (:documentation "first layer of metadata to control when and how play an audio"))
+  (:documentation "first layer of metadata to control how to play an audio"))
+
+(defmethod (setf state-gain) :around (val (obj event))
+  "update remote gain when updating slot"
+  (al:source (audio-source obj) :gain val)
+  (call-next-method))
+
+(defmethod state-gain ((obj event))
+  "query of the field is really a query on remote"
+  (setf (slot-value obj 'gain)
+        (al:get-source (audio-source obj) :gain)))
 
 ;; TODO: either pattern or buffer set, ENSURE
 (defmethod initialize-instance :after ((obj event) &key pattern loop-p)
