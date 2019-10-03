@@ -8,12 +8,8 @@
    (rot :initform (q:identity) :initarg :rot :accessor rot)))
 
 (defclass emitter (dummy-actor)
-  ((prev-pos :initarg :prev-pos :accessor emitter-prev-pos)
-   (velocity :initarg :velocity :accessor emitter-velocity)
-   (events   :initarg :emitter  :reader   emitter-events))
+  ((events   :initarg :emitter  :reader   emitter-events))
   (:default-initargs
-   :prev-pos (v! 0 0 0)
-   :velocity (v! 0 0 0)
    :events   (list)))
 
 (defun make-emitter (&rest events)
@@ -26,6 +22,7 @@
       emitter
     (map nil (op (play _ position velocity)) events)))
 
+#+nil
 (defmethod update :before ((obj emitter) dt)
   "set velocity"
   (setf (emitter-velocity obj)
@@ -35,3 +32,14 @@
 
 ;; Ambient sfx (howl)
 ;;(make-emitter (make-event :odds .3 "howl.wav"))
+
+#+nil
+(list (make-sfx :foot (list "foot1.wav" "foot2.wav")
+                :volume .2)
+      (make-sfx :leaf (list "leaf2.wav" "leaf2.wav")
+                :volume .9))
+
+(defun update-and-play (obj pos rot)
+  (setf (pos obj) pos)
+  (setf (rot obj) rot)
+  (play obj))

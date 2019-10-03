@@ -10,7 +10,6 @@
    :pos-offset (v! 0 0 0)
    :volume-offset 0f0
    :rate-offset 0f0
-   :relative nil ; make sound positional
    :step-size 0f0)
   (:documentation "special type of event for sfx needs"))
 
@@ -19,14 +18,20 @@
     (setf (slot-value obj 'stepper)
           (make-stepper (seconds step-size) (seconds step-size)))))
 
-(defun make-sfx (name paths &key (volume 0.1)
+(defmethod (setf pos) :around (value (obj sfx))
+  "add offset to position before setting it"
+  (call-next-method (v3:+ value (slot-value obj 'pos-offset)) obj))
+
+(defun make-sfx (name paths &key (pos           (v! 0 0 0))
+                                 (pos-offset    (v! 0 0 0))
                                  (volume-offset 0f0)
-                                 (rate-offset 0f0)
-                                 (pos-offset (v! 0 0 0)))
+                                 (rate-offset   0f0)
+                                 (volume        0.1))
   (make-instance 'sfx :name name :paths paths :volume volume
+                      :pos pos
+                      :pos-offset pos-offset
                       :volume-offset volume-offset
-                      :rate-offset rate-offset
-                      :pos-offset pos-offset))
+                      :rate-offset rate-offset))
 
 (declaim (inline random-offset))
 (defun random-offset (value offset)

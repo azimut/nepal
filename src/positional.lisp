@@ -4,19 +4,23 @@
 
 (defclass positional (event)
   ((pos        :initarg :pos        :accessor state-pos)      ; update
+   ;; Derived values
    (prev-pos   :initarg :prev-pos   :accessor state-prev-pos) ; ?
    (prev-ts    :initarg :prev-ts    :accessor state-prev-ts)
    (velocity   :initarg :velocity   :accessor state-velocity) ; update
+   ;; Directional cone?
    (direction  :initarg :direction  :accessor state-direction) ; init/update
    (cone-inner :initarg :cone-inner :accessor state-cone-inner) ; init
    (cone-outer :initarg :cone-outer :accessor state-cone-outer) ; init
-   (rolloff    :initarg :rolloff    :accessor state-rolloff)    ; init
    (outer-gain :initarg :outer-gain :accessor state-outer-gain) ; init
+   ;;
+   (rolloff    :initarg :rolloff    :accessor state-rolloff)    ; init
    ;;(max-distance :accessor state-outer-gain :initform nil)
    ;;min-gain
    ;;max-gain
    )
   (:default-initargs
+   :relative nil ; make sound positional
    :pos (v! 0 0 0)
    :prev-pos (v! 0 0 0)
    :prev-ts (* .1f0 (get-internal-real-time))
@@ -30,6 +34,11 @@
 
 (defmethod initialize-instance :after ((obj positional) &key pos)
   (al:source (audio-source obj) :position pos))
+
+(defun make-positional (name paths &key (volume .5)
+                                        (pos (v! 0 0 0)))
+  (make-instance 'positional :name name :paths paths
+                             :volume volume :pos pos))
 
 (defmethod state-pos ((obj positional))
   (setf (slot-value obj 'pos)
