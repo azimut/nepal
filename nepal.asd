@@ -19,5 +19,7 @@
                (:file "audio")
                (:file "event")
                (:file "music")
+               (:file "positional")
                (:file "sfx")
-               (:file "emitter")))
+               (:file "emitter")
+               (:file "listener")))

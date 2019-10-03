@@ -43,12 +43,6 @@
     (setf fading-out-p t
           fading-in-p  nil)))
 
-(defmethod update :around (obj dt)
-  "update only when source is playing"
-  (let ((state (al:get-source (audio-source obj) :source-state)))
-    (when (eq :PLAYING state)
-      (call-next-method))))
-
 (defmethod (setf state-gain) :around (value (obj music))
   (with-slots (volume fading-in-p fading-out-p source) obj
     (when (= 0 value)
