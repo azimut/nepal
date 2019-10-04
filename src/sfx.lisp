@@ -1,9 +1,9 @@
 (in-package #:nepal)
 
 (defclass sfx (positional)
-  ((pos-offset    :accessor sfx-pos-offset    :initarg  :pos-offset) ;!
-   (step-size     :reader   sfx-step-size     :initarg  :step-size)
-   (stepper       :reader   sfx-stepper       :initform nil))
+  ((pos-offset :accessor sfx-pos-offset :initarg  :pos-offset) ;!
+   (step-size  :reader   sfx-step-size  :initarg  :step-size)
+   (stepper    :reader   sfx-stepper    :initform nil))
   (:default-initargs
    :pos-offset (v! 0 0 0)
    :step-size 0f0)

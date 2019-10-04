@@ -1,41 +1,65 @@
 (in-package #:nepal)
 
 ;; mmm...I am not so sure about this...
-
 (defclass positional (event)
   (;; Derived values
-   (prev-pos   :initarg :prev-pos   :accessor state-prev-pos) ; ?
-   (prev-ts    :initarg :prev-ts    :accessor state-prev-ts)
-   (velocity   :initarg :velocity   :accessor state-velocity) ; update
+   (prev-pos     :accessor state-prev-pos     :initarg :prev-pos) ; ?
+   (prev-ts      :accessor state-prev-ts      :initarg :prev-ts)
+   (velocity     :accessor state-velocity     :initarg :velocity) ; update
    ;; Directional cone?
-   (direction  :initarg :direction  :accessor state-direction) ; init/update
-   (cone-inner :initarg :cone-inner :accessor state-cone-inner) ; init
-   (cone-outer :initarg :cone-outer :accessor state-cone-outer) ; init
-   (outer-gain :initarg :outer-gain :accessor state-outer-gain) ; init
-   ;;
-   (rolloff    :initarg :rolloff    :accessor state-rolloff)    ; init
-   ;;(max-distance :accessor state-outer-gain :initform nil)
+   (direction    :accessor state-direction    :initarg :direction)
+   (cone-inner   :accessor state-cone-inner   :initarg :cone-inner) ; init
+   (cone-outer   :accessor state-cone-outer   :initarg :cone-outer) ; init
+   (outer-gain   :accessor state-outer-gain   :initarg :outer-gain) ; init
+   ;; Distance model modifiers
+   (rolloff      :accessor state-rolloff      :initarg :rolloff
+                 :documentation "determines how quickly the sound decreases
+   higher rolloff quickly decreases.")
+   (max-distance :accessor state-max-distance :initarg :max-distance
+                 :documentation "used on clamped distance models, at which
+   distance the sound will stop attenuating.")
+   (ref-distance :accessor state-ref-distance :initarg :ref-distance
+                 :documentation "distance where gain is 1, set it to 0 to emit
+   from a single point or set it to a value bigger to mark a radius where you
+   will always here it at gain 1, for example music playing in a town.")
    ;;min-gain
    ;;max-gain
    )
   (:default-initargs
-   :relative nil ; make sound positional
+   :relative nil                        ; make sound positional
    :prev-pos (v! 0 0 0)
    :prev-ts (* .1f0 (get-internal-real-time))
    :velocity (v! 0 0 0)
    :direction (v! 0 0 0)
    :cone-inner 360f0
    :cone-outer 360f0
-   :rolloff 1f0
+   :rolloff nil
+   :ref-distance nil
+   :max-distance nil
    :outer-gain 0f0)
   (:documentation "second layer of metadata to control where to play the audio"))
 
-(defmethod initialize-instance :after ((obj positional) &key pos)
-  (al:source (audio-source obj) :position pos))
+(defmethod initialize-instance :after ((obj positional) &key pos
+                                                             ref-distance
+                                                             max-distance
+                                                             rolloff)
+  (al:source (audio-source obj) :position pos)
+  (when rolloff
+    (al:source (audio-source obj) :rolloff-factor rolloff))
+  (when ref-distance
+    (al:source (audio-source obj) :reference-distance ref-distance))
+  (when max-distance
+    (al:source (audio-source obj) :max-distance max-distance)))
 
 (defun make-positional (name paths &key (volume .5)
-                                        (pos (v! 0 0 0)))
+                                        (pos (v! 0 0 0))
+                                        ref-distance
+                                        max-distance
+                                        rolloff)
   (make-instance 'positional :name name :paths paths
+                             :max-distance max-distance
+                             :ref-distance ref-distance
+                             :rolloff rolloff
                              :volume volume :pos pos))
 
 (defmethod state-direction ((obj positional))
@@ -94,3 +118,8 @@
   (check-type val (single-float 0f0 1f0)))
 (defmethod (setf state-outer-gain) :after (val (obj positional))
   (al:source (audio-source obj) :cone-outer-gain val))
+
+(defmethod (setf state-max-distance) :after (value (obj positional))
+  (al:source (audio-source obj) :max-distance value))
+(defmethod (setf state-ref-distance) :after (value (obj positional))
+  (al:source (audio-source obj) :reference-distance value))

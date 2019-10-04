@@ -1,6 +1,7 @@
 (in-package #:nepal)
 
 ;; Base class
+;; distance models
 (defclass audio ()
   ((buffers  :initarg :buffers  :reader   audio-buffers)
    (paths    :initarg :paths    :reader   audio-paths)
@@ -9,8 +10,8 @@
    (name     :initarg :name     :reader   audio-name)
    (pos      :initarg :pos      :accessor pos))
   (:default-initargs
-   :pos (v! 0 0 0)
-   :relative t
+   :pos (v! 0 0 0)  ; position in local space
+   :relative t      ; make basic audio in local space, not world space
    :paths (list)
    :buffers (list)
    :source nil
@@ -33,8 +34,6 @@
       (setf buffers resolved)
       (setf source  (init-source name))
       (al:source source :position pos)
-      ;; https://www.gamedev.net/forums/topic/338053-openal-ambient-music---what-position/
-      ;; make basic audio non-positional
       (al:source source :source-relative relative))))
 
 (defun make-audio (name paths &key (pos (v! 0 0 0)))
@@ -42,8 +41,6 @@
 
 (defmethod play :around ((obj audio))
   "ignore order to play if source is busy"
-  ;;(call-next-method)
-  ;;#+nil
   (let ((state (al:get-source (audio-source obj) :source-state)))
     (when (or (eq :STOPPED state)
               (eq :INITIAL state))
