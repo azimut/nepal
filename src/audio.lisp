@@ -42,8 +42,7 @@
 (defmethod play :around ((obj audio))
   "ignore order to play if source is busy"
   (let ((state (al:get-source (audio-source obj) :source-state)))
-    (when (or (eq :STOPPED state)
-              (eq :INITIAL state))
+    (unless (eq :PLAYING state)
       (call-next-method))))
 
 (defmethod play ((obj audio))
