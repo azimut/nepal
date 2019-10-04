@@ -11,8 +11,15 @@
            #:list-asources
            #:list-abuffers
            #:load-abuffer
+           ;;
            #:play
-           #:stop)
+           #:stop
+           ;;
+           #:audio
+           #:event
+           #:positional
+           #:sfx
+           #:music)
   (:import-from #:temporal-functions
                 #:make-stepper
                 #:seconds)

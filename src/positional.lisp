@@ -3,8 +3,7 @@
 ;; mmm...I am not so sure about this...
 
 (defclass positional (event)
-  ((pos        :initarg :pos        :accessor state-pos)      ; update
-   ;; Derived values
+  (;; Derived values
    (prev-pos   :initarg :prev-pos   :accessor state-prev-pos) ; ?
    (prev-ts    :initarg :prev-ts    :accessor state-prev-ts)
    (velocity   :initarg :velocity   :accessor state-velocity) ; update
@@ -21,7 +20,6 @@
    )
   (:default-initargs
    :relative nil ; make sound positional
-   :pos (v! 0 0 0)
    :prev-pos (v! 0 0 0)
    :prev-ts (* .1f0 (get-internal-real-time))
    :velocity (v! 0 0 0)
@@ -40,9 +38,6 @@
   (make-instance 'positional :name name :paths paths
                              :volume volume :pos pos))
 
-(defmethod state-pos ((obj positional))
-  (setf (slot-value obj 'pos)
-        (al:get-source (audio-source obj) :position)))
 (defmethod state-direction ((obj positional))
   (setf (slot-value obj 'direction)
         (al:get-source (audio-source obj) :direction)))
@@ -62,7 +57,7 @@
   (setf (slot-value obj 'outer-gain)
         (al:get-source (audio-source obj) :cone-outer-gain)))
 
-(defmethod (setf state-pos) :before (val (obj positional))
+(defmethod (setf pos) :before (val (obj positional))
   "when position is updated keep track of the old one and calculate the velocity"
   (check-type val rtg-math.types:vec3)
   (let* ((direction (v3:- (state-prev-pos obj) val))
@@ -71,9 +66,6 @@
     (setf (state-prev-pos obj) (copy-seq (slot-value obj 'pos)))
     (setf (state-velocity obj) (v3:/s direction dt))
     (setf (state-prev-ts  obj) ts)))
-(defmethod (setf state-pos) :after (val (obj positional))
-  "after updating locally update remote"
-  (al:source (audio-source obj) :position val))
 
 (defmethod (setf state-direction) :before (val (obj positional))
   (check-type val rtg-math.types:vec3))
