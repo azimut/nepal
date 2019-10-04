@@ -7,9 +7,11 @@
 (defvar *audio-sources* (make-hash-table))
 
 (defun list-asources ()
-  (alexandria:maphash-keys #'print *audio-sources*))
+  (alexandria:maphash-keys #'print *audio-sources*)
+  (values))
 (defun list-abuffers ()
-  (alexandria:maphash-keys #'print *audio-buffers*))
+  (alexandria:maphash-keys #'print *audio-buffers*)
+  (values))
 
 (defun init-source (name)
   (check-type name keyword)

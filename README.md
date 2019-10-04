@@ -23,7 +23,7 @@ And now you can play it.
 (play *)
 ```
 
-> Note: all BUFFERS and SOURCES are cached to avoid leaking.
+> Note: all BUFFERS and SOURCES are cached to avoid leaking. Buffers by full pathname and sources by name (the first parameter of the constructors).
 
 Before look at other classes. One feature of this library is that you can pass multiple audios to each object. So each time you call (play) it will pick a different one. The idea is that one could create a Common Music Pattern for that audio (TODO: right now defaults to CM:HEAP) and create complex sequences...might be even supporting patterns in other fields.
 
@@ -49,7 +49,7 @@ And asumming we set the `pos` and `rot` to a rtg-math.types:vec3 and rtg-math.ty
 
 ### Other classes
 
-There is a `event` class that adds basic non-positional features, volume, rate and looping. There is a class for `music` that has a fade in/out features, with looping enabled. A `sfx` that has support for random offsets of pitch and volume, as well as position.
+There is a `event` class that adds basic non-positional features, volume, rate and looping. There is a class for `music` that has a fade in/out features, with looping enabled. A `sfx` that has support for random offsets of pitch and volume, as well as position offset.
 
 ### Final notes
 
@@ -58,6 +58,8 @@ The idea I have in mind to use this is have a list of these instances and on an 
 ## TODO
 
 - Restart
+- Globals
+- Directional sources
 
 ## Status
 

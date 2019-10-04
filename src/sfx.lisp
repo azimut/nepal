@@ -26,9 +26,11 @@
                                  (pos-offset    (v! 0 0 0))
                                  (volume-offset 0f0)
                                  (rate-offset   0f0)
-                                 (volume        0.1))
+                                 (volume        0.1)
+                                 loop-p)
   (make-instance 'sfx :name name :paths paths :volume volume
                       :pos pos
+                      :loop-p loop-p
                       :pos-offset pos-offset
                       :volume-offset volume-offset
                       :rate-offset rate-offset))
