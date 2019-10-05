@@ -12,7 +12,6 @@
                #:cl-alut
                #:cm
                #:rtg-math
-               #:serapeum
                #:temporal-functions)
   :components ((:file "package")
                (:file "nepal")
@@ -21,5 +20,5 @@
                (:file "music")
                (:file "positional")
                (:file "sfx")
-               (:file "emitter")
+               ;;(:file "emitter")
                (:file "listener")))

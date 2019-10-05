@@ -20,7 +20,7 @@
                    (events   emitter-events)
                    (position pos))
       emitter
-    (map nil (op (play _ position velocity)) events)))
+    (map nil (lambda (_) (play _ position velocity)) events)))
 
 #+nil
 (defmethod update :before ((obj emitter) dt)

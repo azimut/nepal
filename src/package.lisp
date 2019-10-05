@@ -22,6 +22,4 @@
            #:music)
   (:import-from #:temporal-functions
                 #:make-stepper
-                #:seconds)
-  (:import-from #:serapeum
-                #:op))
+                #:seconds))

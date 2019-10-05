@@ -30,7 +30,7 @@
 ;; TODO: support pattern?
 (defmethod initialize-instance :after ((obj audio) &key name paths relative pos)
   (with-slots (buffers source) obj
-    (let ((resolved (mapcar (op (load-abuffer (truename _))) paths)))
+    (let ((resolved (mapcar (lambda (_) (load-abuffer (truename _))) paths)))
       (setf buffers resolved)
       (setf source  (init-source name))
       (al:source source :position pos)
