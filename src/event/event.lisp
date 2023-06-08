@@ -1,5 +1,6 @@
 (in-package #:nepal)
 
+;; TODO: offsets: sec sample byte
 (defclass event (audio)
   ((odds          :accessor event-odds          :initarg  :odds)
    (pattern       :accessor event-pattern       :initarg  :pattern)
@@ -20,18 +21,21 @@
   (:documentation "first layer of metadata to control how to play an audio"))
 
 (defgeneric update (obj dt))
-(defmethod update :around (obj dt)
+(defmethod update :around ((obj event) dt)
   "update only when source is playing"
   (let ((state (al:get-source (audio-source obj) :source-state)))
     (when (eq :PLAYING state)
       (call-next-method))))
 
+(defmethod (setf event-loop-p) :before (new-value (obj event))
+  (check-type new-value boolean))
+(defmethod (setf event-loop-p) :after (new-value (obj event))
+  (al:source (audio-source obj) :looping new-value))
+
 (defmethod state-gain ((obj event))
-  "query of the field is really a query on remote"
-  (setf (slot-value obj 'gain)
-        (al:get-source (audio-source obj) :gain)))
+  (setf (slot-value obj 'gain) (al:get-source (audio-source obj) :gain)))
+
 (defmethod (setf state-gain) :around (val (obj event))
-  "update remote gain when updating slot"
   (al:source (audio-source obj) :gain val)
   (call-next-method))
 
@@ -44,15 +48,9 @@
   (unless pattern
     (setf (event-pattern obj) (cm:new cm:heap :of (audio-buffers obj)))))
 
-(defun make-event (name paths &key (volume        0.1)
-                                   (odds          1f0)
-                                   (pos           (v! 0 0 0))
-                                   (volume-offset 0f0)
-                                   (rate-offset   0f0)
-                                   (rate          1f0))
+(defun make-event (name paths &key (volume 0.1) (odds 1f0) (pos (v! 0 0 0)) (volume-offset 0f0) (rate-offset 0f0) (rate 1f0))
   (make-instance 'event :name name :paths paths :rate rate :volume volume :odds odds :pos pos
                         :rate-offset rate-offset :volume-offset volume-offset))
-
 
 (declaim (inline random-offset))
 (defun random-offset (value offset)
@@ -73,7 +71,7 @@
     (when (cm:odds odds)
       (let ((buffer (cm:next pattern))
             (new-volume (random-offset volume volume-offset))
-            (new-rate   (random-offset rate rate-offset)))
+            (new-rate   (random-offset rate   rate-offset)))
         (al:source source :buffer buffer)
         (al:source source :gain   new-volume)
         (al:source source :pitch  new-rate)

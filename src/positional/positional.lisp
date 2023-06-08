@@ -11,13 +11,11 @@
    (cone-inner   :accessor state-cone-inner   :initarg :cone-inner) ; init
    (cone-outer   :accessor state-cone-outer   :initarg :cone-outer) ; init
    (outer-gain   :accessor state-outer-gain   :initarg :outer-gain) ; init
-   ;; Distance model modifiers
+   ;; OpenAL - Distance model modifiers
    (rolloff      :accessor state-rolloff      :initarg :rolloff
-                 :documentation "determines how quickly the sound decreases
-   higher rolloff quickly decreases.")
+                 :documentation "determines how quickly the sound decreases")
    (max-distance :accessor state-max-distance :initarg :max-distance
-                 :documentation "used on clamped distance models, at which
-   distance the sound will stop attenuating.")
+                 :documentation "at which distance the sound will stop attenuating")
    (ref-distance :accessor state-ref-distance :initarg :ref-distance
                  :documentation "distance where gain is 1, set it to 0 to emit
    from a single point or set it to a value bigger to mark a radius where you
@@ -39,17 +37,12 @@
    :outer-gain 0f0)
   (:documentation "second layer of metadata to control where to play the audio"))
 
-(defmethod initialize-instance :after ((obj positional) &key pos
-                                                             ref-distance
-                                                             max-distance
-                                                             rolloff)
+(defmethod initialize-instance
+    :after ((obj positional) &key pos ref-distance max-distance rolloff)
   (al:source (audio-source obj) :position pos)
-  (when rolloff
-    (al:source (audio-source obj) :rolloff-factor rolloff))
-  (when ref-distance
-    (al:source (audio-source obj) :reference-distance ref-distance))
-  (when max-distance
-    (al:source (audio-source obj) :max-distance max-distance)))
+  (when rolloff      (al:source (audio-source obj) :rolloff-factor rolloff))
+  (when ref-distance (al:source (audio-source obj) :reference-distance ref-distance))
+  (when max-distance (al:source (audio-source obj) :max-distance max-distance)))
 
 (defun make-positional (name paths &key (volume .5)
                                         (pos (v! 0 0 0))

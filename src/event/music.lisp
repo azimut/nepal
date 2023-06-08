@@ -2,7 +2,6 @@
 
 ;; TODO: fade-time, that is give a time in seconds to fade.
 ;; with current code, you need to try to ensure a fixed fps
-
 (defclass music (event)
   ((fading-out-p :accessor music-fading-out-p :initarg :fading-out-p)
    (fading-in-p  :accessor music-fading-in-p  :initarg :fading-in-p)

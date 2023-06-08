@@ -2,28 +2,37 @@
 
 ;; TODO: might be cram the globals here too?
 (defclass listener ()
-  ((prev-pos :reader   listener-prev-pos :initarg :prev-pos)
-   (prev-ts  :accessor listener-prev-ts  :initarg :prev-ts)
-   (pos      :accessor pos               :initarg :pos)
-   (rot      :accessor rot               :initarg :rot)
-   (gain     :accessor gain              :initarg :gain)
-   (velocity :accessor velocity          :initarg :velocity))
+  ((prev-pos :reader   listener-prev-pos
+             :initform (v! 0 0 0)
+             :documentation "previous position, to calculate the velocity")
+   (prev-ts  :accessor listener-prev-ts
+             :initform 0f0
+             :documentation "previous timestamp")
+   (rot      :accessor rot
+             :initarg :rot)
+   (velocity :accessor velocity
+             :initform (v! 0 0 0)
+             :documentation "OpenAL listener parameter")
+   (gain     :accessor gain
+             :initarg :gain
+             :documentation "OpenAL listener parameter")
+   (pos      :accessor pos
+             :initarg :pos
+             :documentation "OpenAL listener parameter"))
   (:default-initargs
-   :prev-pos (v! 0 0 0)
    :gain 1f0
    :pos (v! 0 0 0)
-   :rot (q:identity)
-   :prev-ts (* .1f0 (get-internal-real-time))
-   :velocity (v! 0 0 0))
+   :rot (q:identity))
   (:documentation "interface? to openal listener...can only be 1.
     By updating the position and rotation of this class, the position,
     velocity and orientation would be calculated and update on OpenAL."))
 
-(defmethod initialize-instance :after ((obj listener) &key pos velocity gain)
-  "reset OpenAL state on new instance"
-  (check-type pos rtg-math.types:vec3)
+(defmethod initialize-instance :before ((obj listener) &key pos)
+  (check-type pos rtg-math.types:vec3))
+(defmethod initialize-instance :after ((obj listener) &key pos gain)
+  (init-audio)
+  (al:listener :velocity (velocity obj))
   (al:listener :position pos)
-  (al:listener :velocity velocity)
   (al:listener :gain gain))
 
 (defmethod (setf velocity) :before (value (obj listener))
@@ -37,16 +46,16 @@
   (al:listener :gain value))
 
 ;; https://gamedev.stackexchange.com/questions/112937/2d-physics-storing-previous-position-vs-storing-velocity
-(defmethod (setf pos) :before (value (obj listener))
-  (check-type value rtg-math.types:vec3)
+(defmethod (setf pos) :before (new-pos (obj listener))
+  (check-type new-pos rtg-math.types:vec3)
   (with-slots (prev-pos pos prev-ts) obj
+    (setf prev-pos pos)
     (let* ((ts (* .1f0 (get-internal-real-time)))
            (dt (- ts prev-ts)))
-      (setf prev-pos       pos)
-      (setf (velocity obj) (v3:/s (v3:- value prev-pos) dt))
+      (setf (velocity obj) (v3:/s (v3:- new-pos prev-pos) dt))
       (setf prev-ts        ts))))
-(defmethod (setf pos) :after (value (obj listener))
-  (al:listener :position value))
+(defmethod (setf pos) :after (new-pos (obj listener))
+  (al:listener :position new-pos))
 
 (defmethod (setf rot) :before (value (obj listener))
   (check-type value rtg-math.types:quaternion))

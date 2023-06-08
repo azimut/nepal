@@ -1,5 +1,3 @@
-;;;; package.lisp
-
 (uiop:define-package #:nepal
   (:use #:cl #:rtg-math)
   (:export #:make-audio

@@ -19,18 +19,17 @@
   (call-next-method (v3:+ value (slot-value obj 'pos-offset)) obj))
 
 (defun make-sfx (name paths &key (pos           (v! 0 0 0))
-                                 (pos-offset    (v! 0 0 0))
-                                 (volume-offset 0f0)
-                                 (rate-offset   0f0)
-                                 (volume        0.1)
-                                 loop-p)
+                              (pos-offset    (v! 0 0 0))
+                              (volume-offset 0f0)
+                              (rate-offset   0f0)
+                              (volume        0.1)
+                              loop-p)
   (make-instance 'sfx :name name :paths paths :volume volume
                       :pos pos
                       :loop-p loop-p
                       :pos-offset pos-offset
                       :volume-offset volume-offset
                       :rate-offset rate-offset))
-
 
 (defmethod play ((obj sfx))
   "plays cm:next buffer element in pattern"
