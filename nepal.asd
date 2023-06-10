@@ -9,7 +9,6 @@
   :pathname "src"
   :depends-on (#:alexandria
                #:cl-openal
-               #:openal-blob
                #:cl-alut
                #:cm
                #:rtg-math
