@@ -1,30 +1,39 @@
 (in-package #:nepal)
 
-;; Base class
-;; distance models
 (defclass audio ()
-  ((name     :initarg :name     :reader   audio-name)
-   (buffers  :initarg :buffers  :reader   audio-buffers  :documentation "ALUT audio buffers")
-   (paths    :initarg :paths    :reader   audio-paths)
-   (source   :initarg :source   :reader   audio-source   :documentation "OpenAL source")
-   (relative :initarg :relative :reader   audio-relative :documentation "OpenAL source parameter")
-   (pos      :initarg :pos      :accessor pos            :documentation "OpenAL source parameter"))
+  ((name      :initarg :name      :reader   audio-name
+              :documentation "used to to cache/lookup the audio source")
+   (buffers   :initarg :buffers   :reader   audio-buffers :initform ()
+              :documentation "ALUT audio buffers")
+   (paths     :initarg :paths     :reader   audio-paths
+              :documentation "ALUT audio buffers original file paths")
+   (source    :initarg :source    :reader   audio-source
+              :documentation "OpenAL source")
+   (relativep :initarg :relativep :reader   audio-relativep
+              :documentation "OpenAL source parameter, if T audio is in local space")
+   (pos       :initarg :pos       :accessor pos
+              :documentation "OpenAL source parameter, audio position"))
   (:default-initargs
-   :pos (v! 0 0 0)  ; position in local space
-   :relative t      ; make basic audio in local space, not world space
+   :name (gensym)
    :paths (list)
-   :buffers (list)
-   :source nil
-   :name (gensym))
+   :relativep T
+   :pos (v! 0 0 0))
   (:documentation "bare minimun data to play a file with OpenAL"))
 
-;; TODO: support pattern?
-(defmethod initialize-instance :after ((obj audio) &key name paths relative pos)
+(defmethod initialize-instance
+    :before ((obj audio) &key name paths relativep pos)
+  (check-type pos rtg-math.types:vec3)
+  (check-type relativep boolean)
+  (check-type name keyword)
+  (check-type paths list))
+
+(defmethod initialize-instance
+    :after ((obj audio) &key name paths relativep pos)
   (with-slots (buffers source) obj
     (setf buffers (mapcar (lambda (_) (load-abuffer (truename _))) paths))
     (setf source (init-source name))
     (al:source source :position pos)
-    (al:source source :source-relative relative)))
+    (al:source source :source-relative relativep)))
 
 (defmethod pos ((obj audio))
   (setf (slot-value obj 'pos) (al:get-source (audio-source obj) :position)))

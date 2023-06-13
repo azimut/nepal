@@ -24,7 +24,7 @@
    ;;max-gain
    )
   (:default-initargs
-   :relative nil                        ; make sound positional
+   :relativep nil ; make sound positional
    :prev-pos (v! 0 0 0)
    :prev-ts (* .1f0 (get-internal-real-time))
    :velocity (v! 0 0 0)

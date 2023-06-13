@@ -30,7 +30,7 @@
   (or (gethash path *audio-buffers*)
       (let ((buffer (alut:create-buffer-from-file path)))
         (when (zerop buffer)
-          (error "Could not load file! Use wav."))
+          (error "Could not load file! Try using .wav"))
         (setf (gethash path *audio-buffers*) buffer))))
 
 (defun init-audio ()
