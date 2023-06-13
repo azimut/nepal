@@ -5,9 +5,9 @@
   ((prev-pos :reader   listener-prev-pos
              :initform (v! 0 0 0)
              :documentation "previous position, to calculate the velocity")
-   (prev-ts  :accessor listener-prev-ts
-             :initform 0f0
-             :documentation "previous timestamp")
+   (dt       :reader dt
+             :initform 0d0
+             :documentation "delta time")
    (rot      :accessor rot
              :initarg :rot)
    (velocity :accessor velocity
@@ -48,12 +48,9 @@
 ;; https://gamedev.stackexchange.com/questions/112937/2d-physics-storing-previous-position-vs-storing-velocity
 (defmethod (setf pos) :before (new-pos (obj listener))
   (check-type new-pos rtg-math.types:vec3)
-  (with-slots (prev-pos pos prev-ts) obj
-    (setf prev-pos pos)
-    (let* ((ts (* .1f0 (get-internal-real-time)))
-           (dt (- ts prev-ts)))
-      (setf (velocity obj) (v3:/s (v3:- new-pos prev-pos) dt))
-      (setf prev-ts        ts))))
+  (with-slots (prev-pos dt) obj
+    (setf (velocity obj) (v3:/s (v3:- new-pos prev-pos)
+                                (coerce dt 'single-float)))))
 (defmethod (setf pos) :after (new-pos (obj listener))
   (al:listener :position new-pos))
 
@@ -61,3 +58,6 @@
   (check-type value rtg-math.types:quaternion))
 (defmethod (setf rot) :after (value (obj listener))
   (al:listener :orientation (concatenate 'vector (q:to-direction (rot obj)) (v! 0 1 0))))
+
+(defmethod update ((obj listener) dt)
+  (setf (slot-value obj 'dt) dt))
