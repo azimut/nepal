@@ -14,13 +14,9 @@
   (:documentation "special type of event for music"))
 
 ;; TODO: positional music with relative
-(defun make-music (name paths &key (fade-by 0.01)
-                                   (volume  0.5)
-                                   (rate    1f0))
-  "music layer, can have variations in different files..."
-  (make-instance 'music :name name :paths paths
-                        :rate rate :volume volume
-                        :fade-by fade-by))
+;; music layer, can have variations in different files...
+(defun make-music (&rest args)
+  (apply #'make-instance 'music args))
 
 (defmethod play ((obj music))
   "plays cm:next buffer element in pattern"
@@ -42,7 +38,7 @@
     (setf fading-out-p t
           fading-in-p  nil)))
 
-(defmethod (setf state-gain) :around (value (obj music))
+(defmethod (setf audio-gain) :around (value (obj music))
   (with-slots (volume fading-in-p fading-out-p source) obj
     (when (= 0 value)
       (setf fading-out-p nil)
@@ -54,10 +50,10 @@
 (defmethod update ((obj music) dt)
   "called by emitter, fade out/in when needed"
   (with-slots (fading-out-p fading-in-p fade-by source volume) obj
-    (let ((current-gain (state-gain obj)))
+    (let ((current-gain (audio-gain obj)))
       (when fading-out-p
         (let ((new-gain (max 0f0 (- current-gain (/ fade-by dt)))))
-          (setf (state-gain obj) new-gain)))
+          (setf (audio-gain obj) new-gain)))
       (when fading-in-p
         (let ((new-gain (min volume (+ current-gain (/ fade-by dt)))))
-          (setf (state-gain obj) new-gain))))))
+          (setf (audio-gain obj) new-gain))))))

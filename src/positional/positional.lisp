@@ -44,16 +44,8 @@
   (when ref-distance (al:source (audio-source obj) :reference-distance ref-distance))
   (when max-distance (al:source (audio-source obj) :max-distance max-distance)))
 
-(defun make-positional (name paths &key (volume .5)
-                                        (pos (v! 0 0 0))
-                                        ref-distance
-                                        max-distance
-                                        rolloff)
-  (make-instance 'positional :name name :paths paths
-                             :max-distance max-distance
-                             :ref-distance ref-distance
-                             :rolloff rolloff
-                             :volume volume :pos pos))
+(defun make-positional (&rest args)
+  (apply #'make-instance 'positional args))
 
 (defmethod state-direction ((obj positional))
   (setf (slot-value obj 'direction)
