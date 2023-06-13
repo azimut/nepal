@@ -22,7 +22,13 @@
                   :documentation "random rate width")
    (loop-p        :accessor event-loop-p
                   :initarg  :loop-p
-                  :documentation "OPENAL source parameter"))
+                  :documentation "OPENAL source parameter")
+   (step-size     :accessor event-step-size
+                  :initarg  :step-size
+                  :documentation "frequency in seconds, each sound is played again")
+   (stepper       :reader   event-stepper
+                  :initform nil
+                  :documentation "the stepper"))
   (:default-initargs
    :odds 1f0
    :pattern NIL
@@ -30,7 +36,8 @@
    :rate 1f0
    :volume-offset 0f0
    :rate-offset 0f0
-   :loop-p nil)
+   :loop-p nil
+   :step-size 0f0)
   (:documentation
    "first layer of metadata to control how to play an audio source"))
 
@@ -44,8 +51,11 @@
 
 ;; TODO: either pattern or buffer set, ENSURE
 (defmethod initialize-instance
-    :after ((obj event) &key pattern loop-p)
+    :after ((obj event) &key pattern loop-p step-size)
   (al:source (audio-source obj) :looping loop-p)
+  (when (plusp step-size)
+    (setf (slot-value obj 'stepper)
+          (make-stepper (seconds step-size) (seconds step-size))))
   (unless pattern
     (setf (event-pattern obj)
           (cm:new cm:heap :of (audio-buffers obj)))))
@@ -56,11 +66,16 @@
     (when (eq :PLAYING state)
       (call-next-method))))
 
+(defmethod (setf event-step-size) :before (new-value (obj event))
+  (assert (plusp new-value)))
 (defmethod (setf event-odds) :before (new-value (obj event))
   (check-type new-value (single-float 0f0 1f0)))
 (defmethod (setf event-loop-p) :before (new-value (obj event))
   (check-type new-value boolean))
 
+(defmethod (setf event-step-size) :after (new-value (obj event))
+  (setf (slot-value obj 'stepper)
+        (make-stepper (seconds new-value) (seconds new-value))))
 (defmethod (setf event-loop-p) :after (new-value (obj event))
   (al:source (audio-source obj) :looping new-value))
 
@@ -81,6 +96,11 @@
   (if (zerop offset)
       value
       (+ value (- (random offset) (/ offset 2f0)))))
+
+(defmethod play :around ((obj event))
+  (with-slots (stepper) obj
+    (when (or (not stepper) (funcall stepper))
+      (call-next-method))))
 
 (defmethod play ((obj event))
   "plays cm:next buffer element in pattern"

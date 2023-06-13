@@ -1,18 +1,10 @@
 (in-package #:nepal)
 
 (defclass sfx (positional)
-  ((pos-offset :accessor sfx-pos-offset :initarg  :pos-offset) ;!
-   (step-size  :reader   sfx-step-size  :initarg  :step-size)
-   (stepper    :reader   sfx-stepper    :initform nil))
+  ((pos-offset :accessor sfx-pos-offset :initarg  :pos-offset));!?
   (:default-initargs
-   :pos-offset (v! 0 0 0)
-   :step-size 0f0)
+   :pos-offset (v! 0 0 0))
   (:documentation "special type of event for sfx needs"))
-
-(defmethod initialize-instance :after ((obj sfx) &key step-size)
-  (when (not (zerop step-size))
-    (setf (slot-value obj 'stepper)
-          (make-stepper (seconds step-size) (seconds step-size)))))
 
 (defmethod (setf pos) :around (value (obj sfx))
   "add offset to position before setting it"
@@ -33,19 +25,12 @@
 
 (defmethod play ((obj sfx))
   "plays cm:next buffer element in pattern"
-  (with-accessors ((volume-offset event-volume-offset)
-                   (rate-offset   event-rate-offset)
-                   (stepper       sfx-stepper)
-                   (volume        event-volume)
-                   (rate          event-rate)
-                   (pattern       event-pattern)
-                   (source        audio-source))
+  (with-slots (volume-offset rate-offset volume rate pattern source)
       obj
-    (when (or (not stepper) (funcall stepper))
-      (let ((buffer     (cm:next pattern))
-            (new-volume (random-offset volume volume-offset))
-            (new-rate   (random-offset rate rate-offset)))
-        (al:source source :buffer buffer)
-        (al:source source :gain   new-volume)
-        (al:source source :pitch  new-rate)
-        (al:source-play source)))))
+    (let ((buffer     (cm:next pattern))
+          (new-volume (random-offset volume volume-offset))
+          (new-rate   (random-offset rate rate-offset)))
+      (al:source source :buffer buffer)
+      (al:source source :gain   new-volume)
+      (al:source source :pitch  new-rate)
+      (al:source-play source))))
